@@ -23,7 +23,7 @@ export default function VideoUploadForm() {
 
     // Render
     return (
-        <form method="POST" onSubmit={handleVideoUpload}>
+        <form onSubmit={handleVideoUpload}>
             <div>
                 <label htmlFor="selectedVideo">Upload a Video</label>
                 <input
