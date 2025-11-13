@@ -18,34 +18,25 @@ import Layout from '../layouts/Layout.astro';
 
 // UI Components
 import VideoUploadForm from '../components/ui/VideoUploadForm';
+import VideoCard from '../components/ui/VideoCard.astro';
 ---
 
 <Layout>
 	<div>
 		<h2>Videos</h2>
-		<ul>
+		<div>
 			{
 				videos.map((video) => (
-					<li style="margin-bottom: 2rem;">
-						<video
-							width="480"
-							controls
-							preload="metadata"
-						>
-							<source
-								src={video.url}
-								type="video/mp4"
-							/>
-							Your browser does not support the video
-							tag.
-						</video>
-						<p>{video.name}</p>
-					</li>
+					<VideoCard url={video.url} name={video.name} />
 				))
 			}
-		</ul>
+		</div>
 	</div>
 
 	<!-- Form to upload a video -->
 	<VideoUploadForm client:load />
 </Layout>
+
+<style>
+	
+</style>
