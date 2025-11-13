@@ -1,9 +1,4 @@
 ---
-// Astro Utility
-// import { actions } from 'astro:actions';
-
-// import { uploadedVideoBucket } from '../lib/googleCloudStorage';
-
 // Initialize Dependency Injection Container
 import { registerAllDependencies } from '../dependency-injection/registerAllDependencies.js';
 await registerAllDependencies();
@@ -11,7 +6,7 @@ await registerAllDependencies();
 // Fetch videos from the API route
 import { GET } from './api/videos.ts';
 let response = await GET(Astro);
-const {videos} = await response.json();
+const { videos } = await response.json();
 console.log('Fetched videos:', videos);
 
 // ----------------------------
@@ -20,38 +15,6 @@ import Layout from '../layouts/Layout.astro';
 
 // UI Components
 import VideoUploadForm from '../components/ui/VideoUploadForm';
-
-// Fetch list of videos from the bucket
-// const listVideos = async () => {
-// 	const [files] = await uploadedVideoBucket.getFiles();
-// 	return Promise.all(
-// 		files.map(async (file) => ({
-// 			name: file.name,
-// 			url: await generateSignedUrl(file.name),
-// 		})),
-// 	);
-// };
-
-// Generate a signed URL for accessing the video
-// const generateSignedUrl = async (filename: string) => {
-// 	const file = uploadedVideoBucket.file(filename);
-
-// 	const [url] = await file.getSignedUrl({
-// 		version: 'v4',
-// 		action: 'read',
-// 		expires: Date.now() + 60 * 60 * 1000, // 1 hour
-// 	});
-
-// 	return url;
-// };
-
-// const videos = await listVideos();
-
-// Get the result of the upload action
-// const result = Astro.getActionResult(
-// 	actions.googleCloudStorage.uploadVideo,
-// );
-// console.log('Upload result:', result);
 ---
 
 <Layout>
@@ -82,15 +45,4 @@ import VideoUploadForm from '../components/ui/VideoUploadForm';
 
 	<!-- Form to upload a video -->
 	<VideoUploadForm client:load />
-
-	<!-- {
-		result?.error && (
-			<p style="color: red;">Error: {result.error.message}</p>
-		)
-	}
-	{
-		result && !result.error && (
-			<p style="color: green;">{result.data.message}</p>
-		)
-	} -->
 </Layout>
