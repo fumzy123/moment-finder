@@ -2,7 +2,8 @@ import type { Video } from "../entities/Video";
 
 
 export abstract class IVideoRepo {
-    abstract generateSignedUrlforVideoFile(fileName: string): Promise<string>;
-    abstract getVidoes(): Promise<Video[]>;
-    abstract uploadVideo(file: File): Promise<Video>;
+    abstract getVideos(): Promise<Video[]>;
+    abstract getVideo(videoName: Video['name']): Promise<Video>
+    abstract uploadVideo(videoFile: File): Promise<Video>;
+    abstract generateSignedUrlforVideoFile(videoName: Video['name']): Promise<string>;
 }

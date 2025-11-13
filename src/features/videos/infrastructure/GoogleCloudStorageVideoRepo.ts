@@ -11,20 +11,7 @@ export class GoogleCloudStorageVideoRepo implements IVideoRepo {
         this.uploadedVideosBucket = this.storage.bucket(bucketName);
     }
 
-    async generateSignedUrlforVideoFile(fileName: string): Promise<string> {
-        if (!fileName) {
-            console.warn("⚠️ No file name provided to generateSignedUrlforVideoFile");
-            return "";
-        }
-        const gcsFile = this.uploadedVideosBucket.file(fileName);
-        const [url] = await gcsFile.getSignedUrl({
-            action: 'read',
-            expires: Date.now() + 1000 * 60 * 60 // 1 hour
-        });
-        return url;
-    }
-
-    async getVidoes(): Promise<Video[]> {
+    async getVideos(): Promise<Video[]> {
         // Get list of files from GCS bucket
         const [files] = await this.uploadedVideosBucket.getFiles();
 
@@ -36,6 +23,19 @@ export class GoogleCloudStorageVideoRepo implements IVideoRepo {
             }))
         );
         return videos;
+    }
+
+    async getVideo(videoName: Video['name']): Promise<Video>{
+        const gcsFile = this.uploadedVideosBucket.file(videoName);
+        const [exists] = await gcsFile.exists();
+        if (!exists) {
+            throw new Error(`Video with name ${videoName} does not exist.`);
+        }
+        const video: Video = {
+            name: gcsFile.name,
+            url: await this.generateSignedUrlforVideoFile(gcsFile.name),
+        };
+        return video;
     }
 
 
@@ -62,7 +62,22 @@ export class GoogleCloudStorageVideoRepo implements IVideoRepo {
         return video;
     }
 
+
+
     async deleteVideo(): Promise<void> {
 
+    }
+
+    async generateSignedUrlforVideoFile(fileName: string): Promise<string> {
+        if (!fileName) {
+            console.warn("⚠️ No file name provided to generateSignedUrlforVideoFile");
+            return "";
+        }
+        const gcsFile = this.uploadedVideosBucket.file(fileName);
+        const [url] = await gcsFile.getSignedUrl({
+            action: 'read',
+            expires: Date.now() + 1000 * 60 * 60 // 1 hour
+        });
+        return url;
     }
 }
