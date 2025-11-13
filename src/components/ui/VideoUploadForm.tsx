@@ -19,6 +19,15 @@ export default function VideoUploadForm() {
         if (data.message) {
             setResponseMessage(data.message);
         }
+
+         // ✅ Reload index page after successful upload
+        if (response.ok) {
+            // small delay to show success message (optional)
+            setTimeout(() => {
+                window.location.reload();
+                // or: window.location.href = "/";
+            }, 1000);
+        }
     }
 
     // Render
