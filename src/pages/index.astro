@@ -4,9 +4,12 @@ import { registerAllDependencies } from '../dependency-injection/registerAllDepe
 await registerAllDependencies();
 
 // Fetch videos from the API route
-import { GET } from './api/videos.ts';
+import { GET } from './api/videos/index.ts';
+import type { GetUploadedVideoResponse } from './api/videos/dtos/GetUploadedVideoResponse';
+
 let response = await GET(Astro);
-const { videos } = await response.json();
+const { videos } =
+	(await response.json()) as GetUploadedVideoResponse;
 console.log('Fetched videos:', videos);
 
 // ----------------------------
