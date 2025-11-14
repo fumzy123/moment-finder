@@ -8,8 +8,8 @@ import { GET } from './api/videos/index.ts';
 import type { GetUploadedVideoResponse } from './api/videos/dtos/GetUploadedVideoResponse';
 
 let response = await GET(Astro);
-const { videos } =
-	(await response.json()) as GetUploadedVideoResponse;
+const { data } = (await response.json()) as GetUploadedVideoResponse;
+const videos = data;
 console.log('Fetched videos:', videos);
 
 // ----------------------------
@@ -17,26 +17,27 @@ console.log('Fetched videos:', videos);
 import Layout from '../layouts/Layout.astro';
 
 // UI Components
-import VideoUploadForm from '../components/ui/VideoUploadForm';
-import VideoCard from '../components/ui/VideoCard.astro';
+import VideoUploadForm from '../presentation/feature/VideoUploadForm.tsx';
+import VideoCard from '../presentation/primitive/VideoCard.astro';
 ---
 
 <Layout>
 	<div>
 		<h2>Videos</h2>
-		<div>
+		<div class="flex gap-15">
 			{
 				videos.map((video) => (
-					<VideoCard url={video.url} name={video.name} />
+					<a href={`/videos/${video.name}`}>
+						<VideoCard
+							url={video.url}
+							name={video.name}
+						/>
+					</a>
 				))
 			}
 		</div>
 	</div>
 
 	<!-- Form to upload a video -->
-	<VideoUploadForm client:load />
+	<!-- <VideoUploadForm client:load /> -->
 </Layout>
-
-<style>
-	
-</style>
