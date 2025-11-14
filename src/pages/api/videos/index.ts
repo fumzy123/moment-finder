@@ -8,8 +8,10 @@ import { resolvers } from "../../../dependency-injection/resolvers";
 import { getUploadedVideos } from "../../../features/videos/application/getUploadedVideos";
 import { uploadVideo } from "../../../features/videos/application/uploadVideo";
 
+
 // DTOs
 import type { GetUploadedVideoResponse } from "./dtos/GetUploadedVideoResponse";
+
 
 // Get the Videos to be listed on the page
 export const GET: APIRoute = async ({ }) => {
@@ -20,10 +22,12 @@ export const GET: APIRoute = async ({ }) => {
     // Get all the videos from the storage bucket using the application layer
     const videos = await getUploadedVideos({infrastructure: { videoRepo } });
 
-      const body: GetUploadedVideoResponse = {
-        message: "Successfully uploaded the video!",
-        videos: videos,
-    };
+    // Wrap it in the Response pattern
+    const body: GetUploadedVideoResponse = {
+      data: videos,
+      error: null,
+      message: "Successfully uploaded the video!"
+    }
 
 
     return new Response(
