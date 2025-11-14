@@ -1,5 +1,6 @@
 ---
-// import '../styles/global.css';
+import NavBar from '../presentation/compound/NavBar.astro';
+import '../styles/global.css';
 ---
 
 <!doctype html>
@@ -9,9 +10,10 @@
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		<title>Character Finder AI</title>
 	</head>
 	<body>
+		<NavBar />
 		<slot />
 	</body>
 </html>
