@@ -1,0 +1,18 @@
+---
+import VideoCard from '../../presentation/primitive/VideoCard.astro';
+
+// Exract the video name from the URL Path parameters
+const { videoName } = Astro.params;
+console.log('Video name from params:', videoName);
+
+// Construct the API URL to fetch video details
+const apiURL = new URL(`/api/videos/${videoName}`, Astro.url);
+console.log('Fetching video details from:', apiURL.href);
+
+// Make a GET request to the API Route to retrieve the video details
+let response = await fetch(apiURL);
+const { data } = await response.json();
+const { id, name, url } = data;
+---
+
+<VideoCard url={url} name={name} controls={true} />
