@@ -1,9 +1,9 @@
 ---
-const { url, name, controls } = Astro.props;
+const { url, name, controls, width = 480 } = Astro.props;
 ---
 
 <div>
-    <video width="480" preload="metadata" controls={controls}>
+    <video width={width} preload="metadata" controls={controls}>
         <source src={url} type="video/mp4" />
         Your browser does not support the video tag.
     </video>
