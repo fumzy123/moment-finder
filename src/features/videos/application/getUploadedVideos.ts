@@ -10,7 +10,7 @@ interface GetUploadedVideosInfrastructure {
 
 export async function getUploadedVideos ({ infrastructure }: {infrastructure: GetUploadedVideosInfrastructure}): Promise<Video[]> {
     const { videoRepo } = infrastructure;
-    const videos = await videoRepo.getVidoes();
+    const videos = await videoRepo.getVideos();
     return Promise.all(
         videos.map(async (video) => ({
             name: video.name,
