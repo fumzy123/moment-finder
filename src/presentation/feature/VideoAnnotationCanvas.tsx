@@ -24,7 +24,7 @@ export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotation
 
 
     // ---------------- State ------------------------------------------------
-    const [videoSize, setVideoSize] = useState({ width: 0, height: 0 });
+    const [stageSize, setStageSize] = useState({ width: 0, height: 0 }); // For the Stage
     const [showAnnotationCanvas, setShowAnnotationCanvas] = useState(false);
     const [rect, setRect] = useState<{
         x: number,
@@ -36,12 +36,13 @@ export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotation
 
 
     // ------------------------ Effect Hook runs once --------------------------
+    // Load Video 
     useEffect(() => {
         const video = videoRef.current;
         if (!video) return;
 
         video.onloadedmetadata = () => {
-            setVideoSize({
+            setStageSize({
                 width: video.clientWidth,
                 height: video.clientHeight
             });
@@ -88,6 +89,7 @@ export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotation
         };
     }, []);
 
+    // Attach the Transformer to the Rectangle when it is present on screen
     useEffect(() => {
         if (
             rectRef.current &&
@@ -100,6 +102,8 @@ export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotation
     }, [rect, showAnnotationCanvas]);
 
     // ------------------------ Event Handlers ----------------------------------
+
+    // Events to handle drag selection
     function handleMouseDown(e: KonvaEventObject<MouseEvent>){
         if (rect) return; // rectangle already exists
 
@@ -140,6 +144,38 @@ export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotation
         setIsDrawing(false);
     };
 
+    // Event to handle capturing the image in a video frame
+    function handleCaptureRectFrame() {
+        if (!videoRef.current || !rect) return;
+
+        const video = videoRef.current;
+        const scaleX = video.videoWidth / video.clientWidth;
+        const scaleY = video.videoHeight / video.clientHeight;
+
+        const canvas = document.createElement('canvas');
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        ctx.drawImage(
+            video,
+            rect.x * scaleX,           // sx: start x in video pixels
+            rect.y * scaleY,           // sy: start y in video pixels
+            rect.width * scaleX,       // sw: width in video pixels
+            rect.height * scaleY,      // sh: height in video pixels
+            0,                         // dx: start x on canvas
+            0,                         // dy: start y on canvas
+            rect.width,                // dw: width on canvas
+            rect.height                // dh: height on canvas
+        );
+
+        const imageDataURL = canvas.toDataURL('image/png'); 
+        return imageDataURL;
+
+    }
+
 
 
     // Render
@@ -153,8 +189,8 @@ export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotation
 
             {/* Canvas Overlay  */}
             { showAnnotationCanvas && 
-                <div className={"absolute border-4 border-red-900  top-0 left-0"}  style={{ width: videoSize.width, height: videoSize.height  }}>
-                    <Stage width={videoSize.width} height={videoSize.height} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp}>
+                <div className={"absolute border-4 border-red-900  top-0 left-0"}  style={{ width: stageSize.width, height: stageSize.height  }}>
+                    <Stage width={stageSize.width} height={stageSize.height} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp}>
                         <Layer>
                             {rect && (
                                 <>
