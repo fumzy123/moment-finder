@@ -12,3 +12,12 @@ export const VideoAnnotationCanvasSchema = z.object({
     })
 })
 export type VideoAnnotationCanvasProps = z.infer<typeof VideoAnnotationCanvasSchema>;
+
+
+export const VideoSelectionBoxSchema = z.object({
+    x: z.number(),
+    y: z.number(),
+    width: z.number(),
+    height: z.number()
+}).nullable();
+export type VideoSelectionBox = z.infer<typeof VideoSelectionBoxSchema>;

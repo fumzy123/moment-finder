@@ -9,7 +9,7 @@ import type { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
 import type { Transformer as KonvaTransformer } from 'konva/lib/shapes/Transformer';
 
 // Client Types
-import type {  VideoAnnotationCanvasProps } from '../types';
+import type {  VideoAnnotationCanvasProps, VideoSelectionBox } from '../types';
 
 
 export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotationCanvasProps ) {
@@ -21,17 +21,13 @@ export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotation
     const videoRef = useRef<HTMLVideoElement>(null);
     const rectRef = useRef<KonvaRect | null>(null);
     const transformerRef = useRef<KonvaTransformer | null>(null);
+    const canvasContainerRef = useRef<HTMLDivElement>(null);
 
 
     // ---------------- State ------------------------------------------------
     const [stageSize, setStageSize] = useState({ width: 0, height: 0 }); // For the Stage
     const [showAnnotationCanvas, setShowAnnotationCanvas] = useState(false);
-    const [rect, setRect] = useState<{
-        x: number,
-        y: number,
-        width: number,
-        height: number
-    } | null>(null)
+    const [rect, setRect] = useState<VideoSelectionBox>(null)
     const [isDrawing, setIsDrawing] = useState(false);
 
 
@@ -50,44 +46,60 @@ export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotation
     }, [])
 
     // Listen for Video Pause and Play with Spacebar
+    // Runs once — listens for video play/pause
     useEffect(() => {
         const video = videoRef.current;
         if (!video) return;
 
-        // ⌨️ SPACE BAR toggles play/pause 
-        function handleKeyDown(e: KeyboardEvent) {
-            if (e.code !== "Space") return;
-            e.preventDefault(); // recommended to stop page scrolling on space
-
-            if (video!.paused) {
-                video!.play();
-            } else {
-                video!.pause();
-            }
-        }
-
-        // ▶️ Video started playing
         function handlePlay() {
             setShowAnnotationCanvas(false);
         }
 
-        // ⏸️ Video paused
         function handlePause() {
             setShowAnnotationCanvas(true);
         }
 
-        // Register all events
-        window.addEventListener("keydown", handleKeyDown);
         video.addEventListener("play", handlePlay);
         video.addEventListener("pause", handlePause);
 
-        // Cleanup all event listeners when component unmounts
         return () => {
-            window.removeEventListener("keydown", handleKeyDown);
             video.removeEventListener("play", handlePlay);
             video.removeEventListener("pause", handlePause);
         };
     }, []);
+
+
+
+        // Always has the latest rect when pressing keys
+    useEffect(() => {
+        const video = videoRef.current;
+        if (!video) return;
+
+        function handleKeyDown(e: KeyboardEvent) {
+            // SPACE = play/pause
+            if (e.code === "Space") {
+                e.preventDefault();
+                video!.paused ? video!.play() : video!.pause();
+            }
+
+            // ENTER = capture frame
+            if (e.code === "Enter") {
+                e.preventDefault();
+                const imageDataURL = handleCaptureRectFrame(video, rect);
+                console.log("RECT USED:", rect);
+                console.log("CAPTURED PNG:", imageDataURL);
+            }
+        }
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+
+    }, [rect]); // ← ensures handleKeyDown always sees latest rect
+
+
 
     // Attach the Transformer to the Rectangle when it is present on screen
     useEffect(() => {
@@ -144,11 +156,9 @@ export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotation
         setIsDrawing(false);
     };
 
-    // Event to handle capturing the image in a video frame
-    function handleCaptureRectFrame() {
+    function handleCaptureRectFrame(video: HTMLVideoElement, rect: VideoSelectionBox) {
         if (!videoRef.current || !rect) return;
 
-        const video = videoRef.current;
         const scaleX = video.videoWidth / video.clientWidth;
         const scaleY = video.videoHeight / video.clientHeight;
 
@@ -175,74 +185,81 @@ export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotation
         return imageDataURL;
 
     }
+    
+
+    
 
 
 
     // Render
     return (
-        <div className='relative'>
-            {/* Video */}
-            <video ref={videoRef} width={width} preload="metadata" controls={controls}>
-                <source src={url} type="video/mp4" />
-                Your browser does not support the video tag.
-            </video>
+        <>
+            <div className='relative'>
+                {/* Video */}
+                <video ref={videoRef} width={width} preload="metadata" controls={controls} crossOrigin="anonymous">
+                    <source src={url} type="video/mp4" />
+                    Your browser does not support the video tag.
+                </video>
 
-            {/* Canvas Overlay  */}
-            { showAnnotationCanvas && 
-                <div className={"absolute border-4 border-red-900  top-0 left-0"}  style={{ width: stageSize.width, height: stageSize.height  }}>
-                    <Stage width={stageSize.width} height={stageSize.height} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp}>
-                        <Layer>
-                            {rect && (
-                                <>
-                                    <Rect
-                                        ref={rectRef}
-                                        x={rect.x}
-                                        y={rect.y}
-                                        width={rect.width}
-                                        height={rect.height}
-                                        fill="rgba(255, 0, 0, 0.1)"
-                                        stroke="red"
-                                        strokeWidth={2}
-                                        draggable
-                                        onDragEnd={(e) => {
-                                            setRect({
-                                                ...rect,
-                                                x: e.target.x(),
-                                                y: e.target.y(),
-                                            });
-                                        }}
-                                        onTransformEnd={() => {
-                                            if (rectRef.current) {
-                                                const node = rectRef.current;
-
-                                                // Save the rectangle's new position and size into state
+                {/* Canvas Overlay  */}
+                { showAnnotationCanvas && 
+                    <div className={"absolute border-4 border-red-900  top-0 left-0"}  style={{ width: stageSize.width, height: stageSize.height  }}>
+                        <Stage width={stageSize.width} height={stageSize.height} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp}>
+                            <Layer>
+                                {rect && (
+                                    <>
+                                        <Rect
+                                            ref={rectRef}
+                                            x={rect.x}
+                                            y={rect.y}
+                                            width={rect.width}
+                                            height={rect.height}
+                                            fill="rgba(255, 0, 0, 0.1)"
+                                            stroke="red"
+                                            strokeWidth={2}
+                                            draggable
+                                            onDragEnd={(e) => {
                                                 setRect({
-                                                    x: node.x(),
-                                                    y: node.y(),
-                                                    width: node.width() * node.scaleX(),
-                                                    height: node.height() * node.scaleY(),
+                                                    ...rect,
+                                                    x: e.target.x(),
+                                                    y: e.target.y(),
                                                 });
+                                            }}
+                                            onTransformEnd={() => {
+                                                if (rectRef.current) {
+                                                    const node = rectRef.current;
 
-                                                // Reset the scale back to 1 so that future transforms start clean
-                                                node.scaleX(1);
-                                                node.scaleY(1);
-                                            }
-                                        }}
-                                    />
+                                                    // Save the rectangle's new position and size into state
+                                                    setRect({
+                                                        x: node.x(),
+                                                        y: node.y(),
+                                                        width: node.width() * node.scaleX(),
+                                                        height: node.height() * node.scaleY(),
+                                                    });
 
-                                    <Transformer
-                                        ref={transformerRef}
-                                        rotateEnabled={false} // optional: disable rotation
-                                    />
-                                </>
+                                                    // Reset the scale back to 1 so that future transforms start clean
+                                                    node.scaleX(1);
+                                                    node.scaleY(1);
+                                                }
+                                            }}
+                                        />
 
-                            )}
-                        </Layer>
-                    </Stage>
-                </div>
-            }
+                                        <Transformer
+                                            ref={transformerRef}
+                                            rotateEnabled={false} // optional: disable rotation
+                                        />
+                                    </>
 
-        </div>
+                                )}
+                            </Layer>
+                        </Stage>
+                    </div>
+                }
+
+            </div>
+            {/* <div ref={canvasContainerRef} className="mt-4 border" /> */}
+        </>
+        
 
     )
 }
