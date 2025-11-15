@@ -1,6 +1,4 @@
 ---
-import VideoCard from '../../presentation/primitive/VideoCard.astro';
-
 // Exract the video name from the URL Path parameters
 const { videoName } = Astro.params;
 console.log('Video name from params:', videoName);
@@ -13,6 +11,20 @@ console.log('Fetching video details from:', apiURL.href);
 let response = await fetch(apiURL);
 const { data } = await response.json();
 const { id, name, url } = data;
+
+const video = {
+    width: 1200,
+    controls: true,
+    ...data,
+};
+
+// Layout
+import Layout from '../../presentation/layouts/Layout.astro';
+
+// Components
+import VideoAnnotationCanvas from '../../presentation/feature/VideoAnnotationCanvas.tsx';
 ---
 
-<VideoCard url={url} name={name} controls={true} width="1200" />
+<Layout>
+    <VideoAnnotationCanvas selectedVideo={video} client:load />
+</Layout>
