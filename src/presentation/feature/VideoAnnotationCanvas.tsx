@@ -1,11 +1,13 @@
 
+// React
 import { useEffect, useRef, useState } from 'react';
-import { Stage, Layer, Rect, Circle, Text, type KonvaNodeEvents } from 'react-konva';
 
+// Konva
+import { Stage, Layer, Rect } from 'react-konva';
+import type { KonvaEventObject } from 'konva/lib/Node'
 
-import { type VideoAnnotationCanvasProps } from '../types';
-import type { KonvaEventObject } from 'konva/lib/Node';
-
+// Client Types
+import type {  VideoAnnotationCanvasProps } from '../types';
 
 
 export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotationCanvasProps ) {
@@ -21,15 +23,12 @@ export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotation
     const [videoSize, setVideoSize] = useState({ width: 0, height: 0 });
     const [showAnnotationCanvas, setShowAnnotationCanvas] = useState(false);
     const [rect, setRect] = useState<{
-        x: 100,
-        y: 100,
-        width: 150,
-        height: 100
+        x: number,
+        y: number,
+        width: number,
+        height: number
     } | null>(null)
     const [isDrawing, setIsDrawing] = useState(false);
-
-    // Rectanlge
-    const [rectangles, setRectangles] = useState<any[]>([]);
 
 
     // ------------------------ Effect Hook runs once --------------------------
@@ -86,7 +85,7 @@ export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotation
     }, []);
 
     // ------------------------ Event Handlers ----------------------------------
-    function handleMouseDown(e){
+    function handleMouseDown(e: KonvaEventObject<MouseEvent>){
         if (rect) return; // rectangle already exists
 
 
@@ -106,7 +105,7 @@ export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotation
         setIsDrawing(true);
     }
 
-    function handleMouseMove(e){
+    function handleMouseMove(e: KonvaEventObject<MouseEvent>){
         if (!isDrawing || !rect) return;
 
         const stage = e.target.getStage();
