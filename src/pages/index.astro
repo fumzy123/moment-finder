@@ -14,14 +14,16 @@ console.log('Fetched videos:', videos);
 
 // ----------------------------
 // Layout
-import Layout from '../layouts/Layout.astro';
+import Layout from '../presentation/layouts/Layout.astro';
 
 // UI Components
 import VideoUploadForm from '../presentation/feature/VideoUploadForm.tsx';
 import VideoCard from '../presentation/primitive/VideoCard.astro';
+import NavBar from '../presentation/compound/NavBar.astro';
 ---
 
 <Layout>
+	<NavBar />
 	<div>
 		<h2>Videos</h2>
 		<div class="flex gap-15">
@@ -37,7 +39,4 @@ import VideoCard from '../presentation/primitive/VideoCard.astro';
 			}
 		</div>
 	</div>
-
-	<!-- Form to upload a video -->
-	<!-- <VideoUploadForm client:load /> -->
 </Layout>
