@@ -3,8 +3,10 @@
 import { useEffect, useRef, useState } from 'react';
 
 // Konva
-import { Stage, Layer, Rect } from 'react-konva';
+import { Stage, Layer, Rect, Transformer } from 'react-konva';
 import type { KonvaEventObject } from 'konva/lib/Node'
+import type { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
+import type { Transformer as KonvaTransformer } from 'konva/lib/shapes/Transformer';
 
 // Client Types
 import type {  VideoAnnotationCanvasProps } from '../types';
@@ -17,6 +19,8 @@ export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotation
 
     // References
     const videoRef = useRef<HTMLVideoElement>(null);
+    const rectRef = useRef<KonvaRect | null>(null);
+    const transformerRef = useRef<KonvaTransformer | null>(null);
 
 
     // ---------------- State ------------------------------------------------
@@ -84,6 +88,17 @@ export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotation
         };
     }, []);
 
+    useEffect(() => {
+        if (
+            rectRef.current &&
+            transformerRef.current &&
+            transformerRef.current.nodes()[0] !== rectRef.current
+        ) {
+            transformerRef.current.nodes([rectRef.current]);
+            transformerRef.current.getLayer()?.batchDraw();
+        }
+    }, [rect, showAnnotationCanvas]);
+
     // ------------------------ Event Handlers ----------------------------------
     function handleMouseDown(e: KonvaEventObject<MouseEvent>){
         if (rect) return; // rectangle already exists
@@ -142,23 +157,49 @@ export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotation
                     <Stage width={videoSize.width} height={videoSize.height} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp}>
                         <Layer>
                             {rect && (
-                                <Rect
-                                    x={rect.x}
-                                    y={rect.y}
-                                    width={rect.width}
-                                    height={rect.height}
-                                    fill="rgba(255, 0, 0, 0.1)"
-                                    stroke="red"
-                                    strokeWidth={2}
-                                    draggable
-                                    onDragEnd={(e) => {
-                                        setRect({
-                                            ...rect,
-                                            x: e.target.x(),
-                                            y: e.target.y(),
-                                        });
-                                    }}
-                                />
+                                <>
+                                    <Rect
+                                        ref={rectRef}
+                                        x={rect.x}
+                                        y={rect.y}
+                                        width={rect.width}
+                                        height={rect.height}
+                                        fill="rgba(255, 0, 0, 0.1)"
+                                        stroke="red"
+                                        strokeWidth={2}
+                                        draggable
+                                        onDragEnd={(e) => {
+                                            setRect({
+                                                ...rect,
+                                                x: e.target.x(),
+                                                y: e.target.y(),
+                                            });
+                                        }}
+                                        onTransformEnd={() => {
+                                            if (rectRef.current) {
+                                                const node = rectRef.current;
+
+                                                // Save the rectangle's new position and size into state
+                                                setRect({
+                                                    x: node.x(),
+                                                    y: node.y(),
+                                                    width: node.width() * node.scaleX(),
+                                                    height: node.height() * node.scaleY(),
+                                                });
+
+                                                // Reset the scale back to 1 so that future transforms start clean
+                                                node.scaleX(1);
+                                                node.scaleY(1);
+                                            }
+                                        }}
+                                    />
+
+                                    <Transformer
+                                        ref={transformerRef}
+                                        rotateEnabled={false} // optional: disable rotation
+                                    />
+                                </>
+
                             )}
                         </Layer>
                     </Stage>
