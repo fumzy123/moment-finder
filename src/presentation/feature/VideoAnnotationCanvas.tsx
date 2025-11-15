@@ -25,10 +25,14 @@ export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotation
 
 
     // ---------------- State ------------------------------------------------
+    // Stage
     const [stageSize, setStageSize] = useState({ width: 0, height: 0 }); // For the Stage
     const [showAnnotationCanvas, setShowAnnotationCanvas] = useState(false);
+    // Rect
     const [rect, setRect] = useState<VideoSelectionBox>(null)
     const [isDrawing, setIsDrawing] = useState(false);
+    // Image
+    const [captureImage, setCapturedImage] = useState<string>();
 
 
     // ------------------------ Effect Hook runs once --------------------------
@@ -85,9 +89,10 @@ export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotation
             // ENTER = capture frame
             if (e.code === "Enter") {
                 e.preventDefault();
-                const imageDataURL = handleCaptureRectFrame(video, rect);
+                const imageDataURL = handleCaptureRectFrame(video!, rect);
                 console.log("RECT USED:", rect);
                 console.log("CAPTURED PNG:", imageDataURL);
+                setCapturedImage(imageDataURL);
             }
         }
 
@@ -258,6 +263,9 @@ export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotation
 
             </div>
             {/* <div ref={canvasContainerRef} className="mt-4 border" /> */}
+            <div>
+                <img src={captureImage}></img>
+            </div>
         </>
         
 
