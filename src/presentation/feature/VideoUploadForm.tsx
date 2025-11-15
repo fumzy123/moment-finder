@@ -1,5 +1,4 @@
 import { useState, type FormEvent, useRef } from "react";
-// import { Upload } from "lucide-react"; // optional icon library
 
 export default function VideoUploadForm() {
     const [responseMessage, setResponseMessage] = useState("");
@@ -53,7 +52,7 @@ export default function VideoUploadForm() {
             <button
                 type="button"
                 onClick={triggerFileSelect}
-                className="flex items-center gap-2 px-4 py-2 rounded-md"
+                className="flex items-center gap-2 px-4 py-2 rounded-md border-b-4"
             >
                 {/* <Upload size={18} /> */}
                 Upload Video
