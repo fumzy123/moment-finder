@@ -9,7 +9,7 @@ import type { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
 import type { Transformer as KonvaTransformer } from 'konva/lib/shapes/Transformer';
 
 // Client Types
-import type {  VideoAnnotationCanvasProps, VideoSelectionBox } from '../types';
+import type {  VideoAnnotationCanvasProps, VideoScreenShot, VideoSelectionBox } from '../types/video';
 
 
 export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotationCanvasProps ) {
@@ -32,7 +32,7 @@ export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotation
     const [rect, setRect] = useState<VideoSelectionBox>(null)
     const [isDrawing, setIsDrawing] = useState(false);
     // Image
-    const [captureImage, setCapturedImage] = useState<string>();
+    const [captureImage, setCapturedImage] = useState<VideoScreenShot>();
 
 
     // ------------------------ Effect Hook runs once --------------------------
@@ -89,10 +89,12 @@ export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotation
             // ENTER = capture frame
             if (e.code === "Enter") {
                 e.preventDefault();
-                const imageDataURL = handleCaptureRectFrame(video!, rect);
-                console.log("RECT USED:", rect);
-                console.log("CAPTURED PNG:", imageDataURL);
-                setCapturedImage(imageDataURL);
+                const isRectFrameCaptured = handleCaptureRectFrame(video!, rect);
+                if(isRectFrameCaptured){
+                    console.log("Successfully captured");
+                }else{
+                    console.log("Not captured")
+                }
             }
         }
 
@@ -172,7 +174,7 @@ export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotation
         canvas.height = rect.height;
 
         const ctx = canvas.getContext('2d');
-        if (!ctx) return;
+        if (!ctx) return false;
 
         ctx.drawImage(
             video,
@@ -186,9 +188,19 @@ export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotation
             rect.height                // dh: height on canvas
         );
 
-        const imageDataURL = canvas.toDataURL('image/png'); 
-        return imageDataURL;
+        // Convert canvas to Blob
+        canvas.toBlob((blob) => {
+            if (!blob) return;
 
+            // Save the captured image
+            setCapturedImage({
+                blob,
+                objectURL: URL.createObjectURL(blob)
+            })
+            
+        }, 'image/png');
+        
+        return true;
     }
     
 
@@ -264,7 +276,7 @@ export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotation
             </div>
             {/* <div ref={canvasContainerRef} className="mt-4 border" /> */}
             <div>
-                <img src={captureImage}></img>
+                <img src={captureImage?.objectURL}></img>
             </div>
         </>
         
