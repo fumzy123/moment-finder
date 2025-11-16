@@ -192,20 +192,40 @@ export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotation
         canvas.toBlob((blob) => {
             if (!blob) return;
 
-            // Save the captured image
+            // Save the captured image to update UI State
             setCapturedImage({
                 blob,
                 objectURL: URL.createObjectURL(blob)
             })
-            
+
+            // Send the Blob to the backend
+            submitScreenshotToAPI(blob)
         }, 'image/png');
         
         return true;
     }
-    
+
+    async function submitScreenshotToAPI(blob: Blob){
+        // 2. Create Form Data
+        const formData = new FormData();
+        formData.append('videoName', selectedVideo.name);
+        formData.append('screenshot', blob, 'screenshot.png');
+
+        // Send form data to backend
+        await fetch(`/api/videos/${selectedVideo.name}/screenshots`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log('Image saved on server:', data);
+            // Optionally update state with permanent URL returned by server
+        })
+        .catch(err => console.error('Error uploading screenshot:', err));
+    }
 
     
-
+    
 
 
     // Render
