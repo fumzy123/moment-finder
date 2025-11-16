@@ -1,10 +1,10 @@
 import type { APIRoute } from "astro";
 
 // Dependency Injection Resolvers
-import { resolvers } from "../../../dependency-injection/resolvers";
+import { resolvers } from "../../../../dependency-injection/resolvers";
 
 // Application layer
-import { getVideo } from "../../../features/videos/application/getVideo";
+import { getVideo } from "../../../../features/videos/application/getVideo";
 
 export const GET : APIRoute = async ({ params } ) => {
     console.log('API params:', params);
