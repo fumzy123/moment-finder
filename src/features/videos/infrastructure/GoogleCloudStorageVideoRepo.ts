@@ -62,6 +62,10 @@ export class GoogleCloudStorageVideoRepo implements IVideoRepo {
         return video;
     }
 
+    // async uploadVideoScreenshot(screenshot: File): Promise<Video> {
+        
+    // }
+
 
 
     async deleteVideo(): Promise<void> {
