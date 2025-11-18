@@ -30,11 +30,11 @@ export async function uploadVideo ({ infrastructure, args }: {infrastructure: Up
 
     // Return the upload result
     // Get a signed URL for accessing the uploaded file
-        const signedVideoUrl = await videoRepo.generateSignedUrlforVideoFile(uploadedVideoFile.name);
-        console.log(`File uploaded to GCS: ${signedVideoUrl}`);
-        return {
-            success: true,
-            message: `Uploaded ${uploadedVideoFile.name} successfully`,
-            uploadedVideoUrl: signedVideoUrl,
-        };
+    const signedVideoUrl = await videoRepo.generateSignedUrlforVideoFile(uploadedVideoFile.name);
+    console.log(`File uploaded to GCS: ${signedVideoUrl}`);
+    return {
+        success: true,
+        message: `Uploaded ${uploadedVideoFile.name} successfully`,
+        uploadedVideoUrl: signedVideoUrl,
+    };
 }
