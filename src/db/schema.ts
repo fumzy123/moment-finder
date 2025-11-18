@@ -3,8 +3,7 @@ import { integer, numeric, pgTable, text, timestamp, uuid, varchar } from "drizz
 export const videoScreenshots = pgTable("video_screenshots", {
   screenshotId: uuid("screenshot_id").primaryKey().defaultRandom(),
 
-  videoId: text("video_id")
-    .notNull(),
+  videoId: text("video_id").notNull(),
 
   timestampSeconds: numeric("timestamp_seconds").notNull(),
 
