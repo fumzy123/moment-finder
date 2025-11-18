@@ -9,7 +9,7 @@ import type { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
 import type { Transformer as KonvaTransformer } from 'konva/lib/shapes/Transformer';
 
 // Client Types
-import type {  VideoAnnotationCanvasProps, VideoScreenShot, VideoSelectionBox } from '../types/video';
+import type {  VideoAnnotationCanvasProps, VideoScreenShot, VideoScreenShotData, VideoSelectionBox } from '../types/video';
 
 
 export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotationCanvasProps ) {
@@ -192,24 +192,52 @@ export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotation
         canvas.toBlob((blob) => {
             if (!blob) return;
 
-            // Save the captured image to update UI State
+            // Update state to show the captured Image on next render
             setCapturedImage({
                 blob,
                 objectURL: URL.createObjectURL(blob)
             })
 
-            // Send the Blob to the backend
-            submitScreenshotToAPI(blob)
+            // Create and Submit the Video Screenshot data
+            const videoScreenShotData: VideoScreenShotData = {
+                videoId: video.id,
+                timestamp: video.currentTime,
+                sourceFrameWidth: video.videoWidth,
+                sourceFrameHeight: video.videoHeight,
+                
+                imageBlob: blob,
+                imageSelectionBox: rect,
+                outputWidth: canvas.width,
+                outputHeight: canvas.height
+            }
+            submitScreenshotToAPI(videoScreenShotData)
         }, 'image/png');
         
         return true;
     }
 
-    async function submitScreenshotToAPI(blob: Blob){
-        // 2. Create Form Data
+    async function submitScreenshotToAPI(screenShot: VideoScreenShotData){
+        
+        // Create Form Data
         const formData = new FormData();
-        formData.append('videoName', selectedVideo.name);
-        formData.append('screenshot', blob, 'screenshot.png');
+
+        // Set Video Data
+        formData.append('videoId', screenShot.videoId);
+        formData.append('timestampSeconds', String(screenShot.timestamp));
+        formData.append('sourceFrameWidth', String(screenShot.sourceFrameWidth));
+        formData.append('sourceFrameHeight', String(screenShot.sourceFrameHeight));
+
+        // Set Video Screenshot Data
+        formData.append("imageBlob", screenShot.imageBlob, "screenshot.png");
+
+        formData.append("selectionBoxCordX", String(screenShot.imageSelectionBox?.x))
+        formData.append("selectoinBoxCordY", String(screenShot.imageSelectionBox?.y))
+        formData.append("selectionBoxWidth", String(screenShot.imageSelectionBox?.width));
+        formData.append("selectionBoxHeight", String(screenShot.imageSelectionBox?.height))
+
+        formData.append("outputWidth", String(screenShot.outputWidth));
+        formData.append("outputHeight", String(screenShot.outputHeight));
+
 
         // Send form data to backend
         await fetch(`/api/videos/${selectedVideo.name}/screenshots`, {
@@ -233,7 +261,7 @@ export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotation
         <>
             <div className='relative'>
                 {/* Video */}
-                <video ref={videoRef} width={width} preload="metadata" controls={controls} crossOrigin="anonymous">
+                <video ref={videoRef} id={selectedVideo.name} width={width} preload="metadata" controls={controls} crossOrigin="anonymous">
                     <source src={url} type="video/mp4" />
                     Your browser does not support the video tag.
                 </video>

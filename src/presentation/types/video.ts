@@ -1,3 +1,14 @@
+
+/**
+ * This file defines the Video related schema and types 
+ * needed by the Presentation layer
+ * 
+ * The schema defined here is how the astro pages and client side components
+ * understand video data for the purpose of UI Presentation.
+ * 
+ * 
+ */
+
 import { VideoSchema } from '../../features/videos/entities/Video';
 import { z } from 'astro:schema';
 
@@ -31,3 +42,19 @@ const VideoScreenShotSchema = z.object({
   })
 });
 export type VideoScreenShot = z.infer<typeof VideoScreenShotSchema>;
+
+
+const VideoScreenShotDataSchema = z.object({
+  // Video Info
+  videoId: VideoSchema.shape.name,
+  timestamp: z.number(),
+  sourceFrameWidth: z.number(),
+  sourceFrameHeight: z.number(),
+
+  // Video Screenshot info
+  imageBlob: VideoScreenShotSchema.shape.blob,
+  imageSelectionBox: VideoSelectionBoxSchema,
+  outputWidth: z.number(),
+  outputHeight: z.number(),
+})
+export type VideoScreenShotData = z.infer<typeof VideoScreenShotDataSchema>;
