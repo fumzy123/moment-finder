@@ -1,7 +1,13 @@
+// Import Query Hooks for Data Fetching from API Endpoint
 import { useVideoScreenshots } from "../../hooks/video/useVideoScreenshots";
-import type { VideoScreenshotDTO } from "../../pages/api/videos/dtos/VideoScreenshotDTO";
+
+// Import View Model Types for Presentation
+import type { VideoScreenshotVM } from "../types/video";
+
+// Primitive Component
 import Screenshot from "../primitive/Screenshot";
 
+// Props
 export interface ScreenshotDisplayProps {
   videoId: string;
 }
@@ -9,7 +15,7 @@ export interface ScreenshotDisplayProps {
 export default function ScreenshotDisplay({
   videoId,
 }: ScreenshotDisplayProps) {
-  // Hook to Extract Data
+  // Use Tanstack Query hook to Fetch Data from API Endpoint
   const { data, isLoading } = useVideoScreenshots(videoId);
 
   console.log(
@@ -17,8 +23,7 @@ export default function ScreenshotDisplay({
     data
   );
 
-  const allVideoScreenshotsInVideo: VideoScreenshotDTO[] = data ?? [];
-  // console.log("Video Screenshot Data on Screenshot Display", allVideoScreenshotsInVideo)
+  const allVideoScreenshotsInVideo: VideoScreenshotVM[] = data ?? [];
 
   if (isLoading) {
     return <p>Loading...</p>;
