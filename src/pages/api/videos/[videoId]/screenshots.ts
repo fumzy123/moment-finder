@@ -57,19 +57,22 @@ export const POST: APIRoute = async ({ params, request }) => {
   console.log(formDataObject);
 
   // 3️⃣ Normalize numeric fields
+  const toInteger = (value: unknown) =>
+    Math.round(Number(value ?? 0));
+
   const videoScreenShotData = {
-    screenshotWidth: Number(formDataObject.outputWidth),
-    screenshotHeight: Number(formDataObject.outputHeight),
+    screenshotWidth: toInteger(formDataObject.outputWidth),
+    screenshotHeight: toInteger(formDataObject.outputHeight),
 
     videoId: formDataObject.videoId,
-    timestampSeconds: Number(formDataObject.timestampSeconds),
-    sourceFrameWidth: Number(formDataObject.sourceFrameWidth),
-    sourceFrameHeight: Number(formDataObject.sourceFrameHeight),
+    timestampSeconds: toInteger(formDataObject.timestampSeconds),
+    sourceFrameWidth: toInteger(formDataObject.sourceFrameWidth),
+    sourceFrameHeight: toInteger(formDataObject.sourceFrameHeight),
 
-    captureFrameX: Number(formDataObject.selectionBoxCordX),
-    captureFrameY: Number(formDataObject.selectionBoxCordY),
-    captureFrameWidth: Number(formDataObject.selectionBoxWidth),
-    captureFrameHeight: Number(formDataObject.selectionBoxHeight),
+    captureFrameX: toInteger(formDataObject.selectionBoxCordX),
+    captureFrameY: toInteger(formDataObject.selectionBoxCordY),
+    captureFrameWidth: toInteger(formDataObject.selectionBoxWidth),
+    captureFrameHeight: toInteger(formDataObject.selectionBoxHeight),
 
     // Keep Blob/File as-is
     imageBlob: formDataObject.imageBlob,
