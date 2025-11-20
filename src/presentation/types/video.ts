@@ -79,3 +79,13 @@ const VideoScreenshotVMSchema = z.object({
 export type VideoScreenshotVM = z.infer<
   typeof VideoScreenshotVMSchema
 >;
+
+// Video View Model (for video lists and cards)
+const VideoVMSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+  url: z.string().url(),
+  displayName: z.string().optional(),
+  bucketPath: z.string(),
+});
+export type VideoVM = z.infer<typeof VideoVMSchema>;
