@@ -1,6 +1,6 @@
-import { integer, numeric, pgTable, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { integer, pgTable, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 
-export const videoScreenshots = pgTable("video_screenshots", {
+export const videoScreenshotsMetadata = pgTable("video_screenshots_metadata", {
 
   screenshotId: uuid("screenshot_id").primaryKey(),
   screenshotFileName: text("screenshot_file_name").notNull(),
@@ -10,12 +10,12 @@ export const videoScreenshots = pgTable("video_screenshots", {
   screenshotBucket: text("screenshot_bucket").notNull(),
 
   videoId: text("video_id").notNull(),
-  timestampSeconds: numeric("timestamp_seconds").notNull(),
+  timestampSeconds: integer("timestamp_seconds").notNull(),
   sourceFrameWidth: integer("source_frame_width"),
   sourceFrameHeight: integer("source_frame_height"),
 
-  captureFrameX: numeric("capture_frame_x").notNull(),
-  captureFrameY: numeric("capture_frame_y").notNull(),
-  captureFrameWidth: numeric("capture_frame_width").notNull(),
-  captureFrameHeight: numeric("capture_frame_height").notNull(),
+  captureFrameX: integer("capture_frame_x").notNull(),
+  captureFrameY: integer("capture_frame_y").notNull(),
+  captureFrameWidth: integer("capture_frame_width").notNull(),
+  captureFrameHeight: integer("capture_frame_height").notNull(),
 });

@@ -4,63 +4,100 @@ import type { APIRoute } from "astro";
 import { resolvers } from "../../../../dependency-injection/resolvers";
 
 // Application layer
-import { saveVideoScreenShot } from "../../../../features/videos/application/saveVideoScreenShot"
+import { saveVideoScreenShot } from "../../../../features/videos/application/saveVideoScreenShot";
+import { getAllVideoScreenshots } from "../../../../features/videos/application/getAllVideoScreenshots";
+import type { GetAllVideoScreenshotsResponse } from "../dtos/GetAllVideoScreenshotsResponse";
 
+export const GET: APIRoute = async ({ params }) => {
+  const { videoId } = params;
 
-export const POST : APIRoute = async ({ params, request } ) => {
+  if (!videoId) {
+    throw Error(
+      "Cannot Get the screenshots of a video with no Video Id"
+    );
+  }
 
-    // Get FormData 
-    const formData = await request.formData();
+  // Get the Dependencies from the Dependency Injection Container
+  // These are the repo necessary to get data to the page
+  const videoRepo = resolvers.videoRepoResolver();
+  const videoScreenshotMetadataRepo =
+    resolvers.videoScreenshotMetadataRepoResolver();
 
-    // 2️⃣ Convert FormData to JS object
-    const formDataObject: Record<string, any> = {};
-    for (const [key, value] of formData.entries()) {
-      formDataObject[key] = value;
-    }
-    console.log("This is form data");
-    console.log(formDataObject);
+  // Get the video screenshot
+  const videoScreenShotData = await getAllVideoScreenshots({
+    infrastructure: { videoRepo, videoScreenshotMetadataRepo },
+    args: { videoId },
+  });
 
-    // 3️⃣ Normalize numeric fields
-    const videoScreenShotData = {
+  console.log(
+    "API Layer: getAllVideoScreenshots: ",
+    videoScreenShotData
+  );
 
-      screenshotWidth: Number(formDataObject.outputWidth),
-      screenshotHeight: Number(formDataObject.outputHeight),
+  // Get all the video screenshot
+  const body: GetAllVideoScreenshotsResponse = {
+    data: videoScreenShotData,
+    error: null,
+    message:
+      "Successfully retrieved screenshot data from Application layer",
+  };
+  return new Response(JSON.stringify(body));
+};
 
+export const POST: APIRoute = async ({ params, request }) => {
+  // Get FormData
+  const formData = await request.formData();
 
+  // 2️⃣ Convert FormData to JS object
+  const formDataObject: Record<string, any> = {};
+  for (const [key, value] of formData.entries()) {
+    formDataObject[key] = value;
+  }
+  console.log("This is form data");
+  console.log(formDataObject);
 
-      videoId: formDataObject.videoId,  
-      timestampSeconds: Number(formDataObject.timestampSeconds),
-      sourceFrameWidth: Number(formDataObject.sourceFrameWidth),
-      sourceFrameHeight: Number(formDataObject.sourceFrameHeight),
+  // 3️⃣ Normalize numeric fields
+  const videoScreenShotData = {
+    screenshotWidth: Number(formDataObject.outputWidth),
+    screenshotHeight: Number(formDataObject.outputHeight),
 
-      captureFrameX: Number(formDataObject.selectionBoxCordX),
-      captureFrameY: Number(formDataObject.selectoinBoxCordY),
-      captureFrameWidth: Number(formDataObject.selectionBoxWidth),
-      captureFrameHeight: Number(formDataObject.selectionBoxHeight),
+    videoId: formDataObject.videoId,
+    timestampSeconds: Number(formDataObject.timestampSeconds),
+    sourceFrameWidth: Number(formDataObject.sourceFrameWidth),
+    sourceFrameHeight: Number(formDataObject.sourceFrameHeight),
 
-      // Keep Blob/File as-is
-      imageBlob: formDataObject.imageBlob,
-      
-    };
-    console.log("This is screenshot data below");
-    console.log(videoScreenShotData);
+    captureFrameX: Number(formDataObject.selectionBoxCordX),
+    captureFrameY: Number(formDataObject.selectionBoxCordY),
+    captureFrameWidth: Number(formDataObject.selectionBoxWidth),
+    captureFrameHeight: Number(formDataObject.selectionBoxHeight),
 
+    // Keep Blob/File as-is
+    imageBlob: formDataObject.imageBlob,
+  };
+  console.log("This is screenshot data below");
+  console.log(videoScreenShotData);
 
-    // todo : Server side form validation needed with zod
+  // todo : Server side form validation needed with zod
 
-    // Get the Dependecnies from the Dependency Injection Container
-    const videoRepo = resolvers.videoRepoResolver();
-    const videoScreenshotMetadataRepo = resolvers.videoScreenshotMetadataRepoResolver();
-    
-    // Call the Application layer use case code to actually save the screenshot to the database
-    const data = await saveVideoScreenShot({
-        infrastructure: {
-            videoRepo,
-            videoScreenshotMetadataRepo,
-        },
-        args: videoScreenShotData
+  // Get the Dependecnies from the Dependency Injection Container
+  const videoRepo = resolvers.videoRepoResolver();
+  const videoScreenshotMetadataRepo =
+    resolvers.videoScreenshotMetadataRepoResolver();
+
+  // Call the Application layer use case code to actually save the screenshot to the database
+  const data = await saveVideoScreenShot({
+    infrastructure: {
+      videoRepo,
+      videoScreenshotMetadataRepo,
+    },
+    args: videoScreenShotData,
+  });
+
+  return new Response(
+    JSON.stringify({
+      data,
+      error: null,
+      message: `Video successfully fetched`,
     })
-
-     
-    return new Response(JSON.stringify({ data, error: null, message: `Video successfully fetched` }));
-}
+  );
+};

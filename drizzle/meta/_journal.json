@@ -15,6 +15,13 @@
       "when": 1763540210525,
       "tag": "0001_left_avengers",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1763621731418,
+      "tag": "0002_steep_wolf_cub",
+      "breakpoints": true
     }
   ]
 }

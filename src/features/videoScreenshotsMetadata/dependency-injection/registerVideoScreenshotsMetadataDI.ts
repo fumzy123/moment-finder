@@ -3,14 +3,15 @@ import { CloudSQLVideoScreenshotMetadataRepo } from '../infrastructure/CloudSQLV
 import { dependencyKeys } from '../../../dependency-injection/dependencyKeys';
 
 import { db } from '../../..';
-import { videoScreenshots } from '../../../db/schema';
+import { videoScreenshotsMetadata } from '../../../db/schema';
 import type { IVideoScreenshotMetadataRepo } from '../ports/IVideoScreenshotMetadataRepo';
+
 
 
 export function registerVideoScreenshotsMetadataDI(container: AwilixContainer) {
     container.register({
         [dependencyKeys.videoScreenshotsMetadataRepo]: asFunction(():IVideoScreenshotMetadataRepo => {
-            return new CloudSQLVideoScreenshotMetadataRepo(db, videoScreenshots);
+            return new CloudSQLVideoScreenshotMetadataRepo(db, videoScreenshotsMetadata);
         }, {lifetime: 'SINGLETON'}),
     });
 }

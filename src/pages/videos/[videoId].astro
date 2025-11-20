@@ -7,6 +7,16 @@ console.log('Video name from params:', videoId);
 const apiURL = new URL(`/api/videos/${videoId}`, Astro.url);
 console.log('Fetching video details from:', apiURL.href);
 
+// Layout
+import Layout from '../../presentation/layouts/Layout.astro';
+
+// Components
+import VideoAnnotationCanvas from '../../presentation/feature/VideoAnnotationCanvas.tsx';
+import type { GetUploadedVideoResponse } from '../api/videos/dtos/GetUploadedVideoResponse';
+import QueryProvider from '../../provider/QueryProvider';
+import ScreenshotDisplay from '../../presentation/feature/ScreenshotDisplay';
+import VideoAnnotationPage from '../../presentation/layouts/VideoAnnotationPage';
+
 // Make a GET request to the API Route to retrieve the video details
 let response = await fetch(apiURL);
 const { data, error, message } =
@@ -17,15 +27,13 @@ const video = {
     controls: true,
     ...data,
 };
-
-// Layout
-import Layout from '../../presentation/layouts/Layout.astro';
-
-// Components
-import VideoAnnotationCanvas from '../../presentation/feature/VideoAnnotationCanvas.tsx';
-import type { GetUploadedVideoResponse } from '../api/videos/dtos/GetUploadedVideoResponse';
 ---
 
 <Layout>
-    <VideoAnnotationCanvas selectedVideo={video} client:load />
+    <!-- <QueryProvider client:only="react">
+        <VideoAnnotationCanvas client:load selectedVideo={video} />
+        <ScreenshotDisplay client:only="react" videoId={videoId!} />
+    </QueryProvider> -->
+
+    <VideoAnnotationPage client:only="react" video={video} />
 </Layout>
