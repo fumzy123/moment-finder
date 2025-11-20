@@ -21,38 +21,44 @@ export const POST : APIRoute = async ({ params, request } ) => {
     console.log(formDataObject);
 
     // 3️⃣ Normalize numeric fields
-    const screenshotData = {
+    const videoScreenShotData = {
+
+      screenshotWidth: Number(formDataObject.outputWidth),
+      screenshotHeight: Number(formDataObject.outputHeight),
+
+
+
       videoId: formDataObject.videoId,  
       timestampSeconds: Number(formDataObject.timestampSeconds),
       sourceFrameWidth: Number(formDataObject.sourceFrameWidth),
       sourceFrameHeight: Number(formDataObject.sourceFrameHeight),
 
-      rectX: Number(formDataObject.selectionBoxCordX),
-      rectY: Number(formDataObject.selectoinBoxCordY),
-      rectWidth: Number(formDataObject.selectionBoxWidth),
-      rectHeight: Number(formDataObject.selectionBoxHeight),
+      captureFrameX: Number(formDataObject.selectionBoxCordX),
+      captureFrameY: Number(formDataObject.selectoinBoxCordY),
+      captureFrameWidth: Number(formDataObject.selectionBoxWidth),
+      captureFrameHeight: Number(formDataObject.selectionBoxHeight),
 
       // Keep Blob/File as-is
       imageBlob: formDataObject.imageBlob,
-      outputWidth: Number(formDataObject.outputWidth),
-      outputHeight: Number(formDataObject.outputHeight),
-
+      
     };
     console.log("This is screenshot data below");
-    console.log(screenshotData);
+    console.log(videoScreenShotData);
 
 
     // todo : Server side form validation needed with zod
 
     // Get the Dependecnies from the Dependency Injection Container
     const videoRepo = resolvers.videoRepoResolver();
+    const videoScreenshotMetadataRepo = resolvers.videoScreenshotMetadataRepoResolver();
     
     // Call the Application layer use case code to actually save the screenshot to the database
     const data = await saveVideoScreenShot({
         infrastructure: {
-            videoRepo
+            videoRepo,
+            videoScreenshotMetadataRepo,
         },
-        args: screenshotData
+        args: videoScreenShotData
     })
 
      

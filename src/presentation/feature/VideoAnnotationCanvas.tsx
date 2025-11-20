@@ -13,9 +13,11 @@ import type {  VideoAnnotationCanvasProps, VideoScreenShot, VideoScreenShotData,
 
 
 export default function VideoAnnotationCanvas({ selectedVideo }: VideoAnnotationCanvasProps ) {
+    console.log(selectedVideo)
 
     // Destructure props
     const { url, width, controls } = selectedVideo;
+    console.log(url);
 
     // References
     const videoRef = useRef<HTMLVideoElement>(null);

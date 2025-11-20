@@ -1,24 +1,31 @@
 import { z } from "astro:schema";
 import { IVideoRepo } from "../ports/IVideoRepo";
-import type { VideoScreenShotData } from "../../../presentation/types/video";
+import { IVideoScreenshotMetadataRepo } from "../../videoScreenshotsMetadata/ports/IVideoScreenshotMetadataRepo";
 
 interface SaveVideoScreenshotInfrastructure { 
-    videoRepo: IVideoRepo
+    videoRepo: IVideoRepo;
+    videoScreenshotMetadataRepo: IVideoScreenshotMetadataRepo;
 }
 
 // In application layer
 interface SaveVideoScreenshotArgs {
+  
+  screenshotWidth: number,
+  screenshotHeight: number,
+
   videoId: string;
   timestampSeconds: number;
-  rectX: number;
-  rectY: number;
-  rectWidth: number;
-  rectHeight: number;
-  outputWidth: number;
-  outputHeight: number;
   sourceFrameWidth: number;
   sourceFrameHeight: number;
-  imageBlob: Blob | File; // raw file to upload
+
+  captureFrameX: number;
+  captureFrameY: number;
+  captureFrameWidth: number;
+  captureFrameHeight: number;
+
+
+
+  imageBlob: File; // raw file to upload
 }
 
 interface SaveVideoScreenshotResponse {
@@ -42,20 +49,33 @@ interface SaveVideoScreenshotResponse {
       publicUrl: string;
     };
     createdAt: string; // ISO date string
-
 }
 
 
 export async function saveVideoScreenShot({infrastructure , args}: {infrastructure: SaveVideoScreenshotInfrastructure, args: SaveVideoScreenshotArgs}){
     // Extract the Infrastructure needed to save the screenshot
-    // const { videoRepo } = infrastructure;
+    const { videoRepo, videoScreenshotMetadataRepo } = infrastructure;
+    const { videoId, timestampSeconds, sourceFrameWidth, sourceFrameHeight, captureFrameX, captureFrameY, captureFrameWidth, captureFrameHeight, screenshotWidth, screenshotHeight, imageBlob } = args;
 
-    // Extract the Arguments
-    const { } = args;
+    // Upload Video Screenshot to Google Cloud Storage Bucket
+    const videoScreenshot = await videoRepo.uploadVideoScreenshot(videoId, imageBlob);
 
-    // todo : Call videoRepo Infrastructure to upload Screenshot to GCS Bucket
-    // Come up with a folder structure for Videos and Screenshot in Google Cloud storage
-    // const videoRepo.uploadVideo
-    
-    // todo : Call 
+    // Upload Video Screenshot Metadata to Cloud SQL Postgres Database
+    const videoScreenshotMetadata = await videoScreenshotMetadataRepo.createVideoScreenshotMetadata({
+      screenshotId: videoScreenshot.id,
+      screenshotFileName: videoScreenshot.filename,
+      screenshotBucket: videoScreenshot.bucket,
+      screenshotWidth,
+      screenshotHeight,
+      
+      videoId,
+      timestampSeconds,
+      sourceFrameWidth,
+      sourceFrameHeight,
+
+      captureFrameX,
+      captureFrameY,
+      captureFrameWidth,
+      captureFrameHeight,
+    });
 }

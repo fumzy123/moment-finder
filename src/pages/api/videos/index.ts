@@ -10,7 +10,7 @@ import { uploadVideo } from "../../../features/videos/application/uploadVideo";
 
 
 // DTOs
-import type { GetUploadedVideoResponse } from "./dtos/GetUploadedVideoResponse";
+import type { GetUploadedVideosResponse } from "./dtos/GetUploadedVideosResponse";
 
 
 // Get the Videos to be listed on the page
@@ -23,7 +23,7 @@ export const GET: APIRoute = async ({ }) => {
     const videos = await getUploadedVideos({infrastructure: { videoRepo } });
 
     // Wrap it in the Response pattern
-    const body: GetUploadedVideoResponse = {
+    const body: GetUploadedVideosResponse = {
       data: videos,
       error: null,
       message: "Successfully uploaded the video!"

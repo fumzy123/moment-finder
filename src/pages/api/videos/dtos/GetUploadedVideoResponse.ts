@@ -1,9 +1,9 @@
 
 import { z } from 'astro:schema';
-import { VideoSchema } from '../../../../features/videos/entities/Video';
+import { UploadedVideoDTO } from './UploadedVideoDTO';
 
 export const GetUploadedVideoResponseSchema = z.object({
-    data: z.array(VideoSchema),
+    data: UploadedVideoDTO,
     error: z.string().nullable(),
     message: z.string(),
 })

@@ -9,19 +9,26 @@ interface GetVideoInfrastructure {
 }
 
 interface GetVideoArgs {
-    videoName: Video['name'];
+    videoId: Video['id'];
 }
 
-export async function getVideo ({ infrastructure, args }: {infrastructure: GetVideoInfrastructure, args: GetVideoArgs}): Promise<Video> {
+
+
+export async function getVideo ({ infrastructure, args }: {infrastructure: GetVideoInfrastructure, args: GetVideoArgs}) {
     
     // Extract the Infrastructure
     const { videoRepo } = infrastructure;
 
     // Extract the Arguments
-    const { videoName } = args;
+    const { videoId } = args;
 
+    console.log("Getting video with name: ", videoId)
     // Use the Infrastructure to get the video
-    const video = await videoRepo.getVideo(videoName);
-
-    return video;
+    const video = await videoRepo.getVideo(videoId);
+    const url = await videoRepo.generateSignedUrlforMediaFile(video.bucketPath);
+    const uploadedVideo = {
+        url,
+        ...video,
+    }
+    return uploadedVideo;
 }

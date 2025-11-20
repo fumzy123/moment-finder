@@ -9,17 +9,20 @@
  * 
  */
 
-import { VideoSchema } from '../../features/videos/entities/Video';
 import { z } from 'astro:schema';
 
 
 export const VideoAnnotationCanvasSchema = z.object({
-    selectedVideo:  VideoSchema.extend({
-        width: z.number(),
-        height: z.number(),
-        controls: z.boolean()
-    })
-})
+  selectedVideo: z.object({
+    url: z.string(),
+    id: z.string(),
+    name: z.string().min(1, "Name cannot be empty"),
+    bucketPath: z.string().min(1, "Bucket path cannot be empty"),
+    displayName: z.string().optional(), // Marks the field as optional, matching the '?' in the original type
+    width: z.number().positive("Width must be a positive number"),
+    controls: z.boolean(),
+  })
+});
 export type VideoAnnotationCanvasProps = z.infer<typeof VideoAnnotationCanvasSchema>;
 
 
@@ -46,7 +49,7 @@ export type VideoScreenShot = z.infer<typeof VideoScreenShotSchema>;
 
 const VideoScreenShotDataSchema = z.object({
   // Video Info
-  videoId: VideoSchema.shape.name,
+  videoId: z.string(),
   timestamp: z.number(),
   sourceFrameWidth: z.number(),
   sourceFrameHeight: z.number(),
