@@ -368,10 +368,6 @@ export default function VideoAnnotationCanvas({
           </div>
         )}
       </div>
-      {/* <div ref={canvasContainerRef} className="mt-4 border" /> */}
-      <div>
-        <img src={captureImage?.objectURL}></img>
-      </div>
     </>
   );
 }
