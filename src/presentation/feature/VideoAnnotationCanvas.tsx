@@ -14,6 +14,7 @@ import type {
   VideoScreenShotData,
   VideoSelectionBox,
 } from "../types/video";
+import { useUploadScreenshot } from "../../hooks/video/useUploadScreenshot";
 
 export default function VideoAnnotationCanvas({
   selectedVideo,
@@ -269,18 +270,22 @@ export default function VideoAnnotationCanvas({
     formData.append("outputHeight", String(screenShot.outputHeight));
 
     // Send form data to backend
-    await fetch(`/api/videos/${selectedVideo.name}/screenshots`, {
-      method: "POST",
-      body: formData,
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Image saved on server:", data);
-        // Optionally update state with permanent URL returned by server
-      })
-      .catch((err) =>
-        console.error("Error uploading screenshot:", err)
-      );
+    // const res = await fetch(
+    //   `/api/videos/${selectedVideo.name}/screenshots`,
+    //   {
+    //     method: "POST",
+    //     body: formData,
+    //   }
+    // )
+    //   .then((res) => res.json())
+    //   .then((data) => {
+    //     console.log("Image saved on server:", data);
+    //     // Optionally update (state with permanent URL returned by server
+    //   })
+    //   .catch((err) =>
+    //     console.error("Error uploading screenshot:", err)
+    //   );
+    const ans = useUploadScreenshot(selectedVideo.name);
   }
 
   // Render
