@@ -30,10 +30,5 @@ const video = {
 ---
 
 <Layout>
-    <!-- <QueryProvider client:only="react">
-        <VideoAnnotationCanvas client:load selectedVideo={video} />
-        <ScreenshotDisplay client:only="react" videoId={videoId!} />
-    </QueryProvider> -->
-
     <VideoAnnotationPage client:only="react" video={video} />
 </Layout>
