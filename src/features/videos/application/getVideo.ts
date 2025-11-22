@@ -2,26 +2,53 @@
 import type { Video } from "../entities/Video";
 
 // Ports / Infrastructure
-import type { IVideoRepo } from "../ports/IVideoRepo"
+import type { IVideoRepo } from "../ports/IVideoRepo";
 
 interface GetVideoInfrastructure {
-    videoRepo: IVideoRepo
+  videoRepo: IVideoRepo;
 }
 
 interface GetVideoArgs {
-    videoName: Video['name'];
+  videoId: Video["id"];
 }
 
-export async function getVideo ({ infrastructure, args }: {infrastructure: GetVideoInfrastructure, args: GetVideoArgs}): Promise<Video> {
-    
-    // Extract the Infrastructure
-    const { videoRepo } = infrastructure;
+/**
+ * Application layer result type for GetVideo use case.
+ * This type combines domain entities with use case-specific computed fields.
+ */
+export interface GetVideoResult {
+  id: string;
+  name: string;
+  bucketPath: string;
+  displayName?: string;
+  url: string; // computed in application layer
+}
 
-    // Extract the Arguments
-    const { videoName } = args;
+export async function getVideo({
+  infrastructure,
+  args,
+}: {
+  infrastructure: GetVideoInfrastructure;
+  args: GetVideoArgs;
+}): Promise<GetVideoResult> {
+  // Extract the Infrastructure
+  const { videoRepo } = infrastructure;
 
-    // Use the Infrastructure to get the video
-    const video = await videoRepo.getVideo(videoName);
+  // Extract the Arguments
+  const { videoId } = args;
 
-    return video;
+  console.log("Getting video with name: ", videoId);
+  // Use the Infrastructure to get the video
+  const video = await videoRepo.getVideo(videoId);
+  const url = await videoRepo.generateSignedUrlforMediaFile(
+    video.bucketPath
+  );
+  const result: GetVideoResult = {
+    id: video.id,
+    name: video.name,
+    bucketPath: video.bucketPath,
+    displayName: video.displayName,
+    url,
+  };
+  return result;
 }

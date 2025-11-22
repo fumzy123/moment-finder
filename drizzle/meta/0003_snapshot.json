@@ -1,0 +1,118 @@
+{
+  "id": "9645474c-2f68-478d-bb2e-4b6e0d2f82d4",
+  "prevId": "e2f2c06a-7446-485d-9806-ea2095abf409",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.video_screenshots_metadata": {
+      "name": "video_screenshots_metadata",
+      "schema": "",
+      "columns": {
+        "screenshot_id": {
+          "name": "screenshot_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "screenshot_file_name": {
+          "name": "screenshot_file_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "screenshot_width": {
+          "name": "screenshot_width",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "screenshot_height": {
+          "name": "screenshot_height",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "screenshot_bucket": {
+          "name": "screenshot_bucket",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "video_id": {
+          "name": "video_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "timestamp_seconds": {
+          "name": "timestamp_seconds",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source_frame_width": {
+          "name": "source_frame_width",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_frame_height": {
+          "name": "source_frame_height",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "capture_frame_x": {
+          "name": "capture_frame_x",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "capture_frame_y": {
+          "name": "capture_frame_y",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "capture_frame_width": {
+          "name": "capture_frame_width",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "capture_frame_height": {
+          "name": "capture_frame_height",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
+

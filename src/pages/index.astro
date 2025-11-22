@@ -5,39 +5,35 @@ await registerAllDependencies();
 
 // Fetch videos from the API route
 import { GET } from './api/videos/index.ts';
-import type { GetUploadedVideoResponse } from './api/videos/dtos/GetUploadedVideoResponse';
+import type { GetUploadedVideosResponse } from './api/videos/dtos/GetUploadedVideosResponse.ts';
 
 let response = await GET(Astro);
-const { data } = (await response.json()) as GetUploadedVideoResponse;
+const { data } = (await response.json()) as GetUploadedVideosResponse;
 const videos = data;
 console.log('Fetched videos:', videos);
 
 // ----------------------------
 // Layout
-import Layout from '../layouts/Layout.astro';
+import Layout from '../presentation/layouts/Layout.astro';
 
 // UI Components
 import VideoUploadForm from '../presentation/feature/VideoUploadForm.tsx';
 import VideoCard from '../presentation/primitive/VideoCard.astro';
+import NavBar from '../presentation/compound/NavBar.astro';
 ---
 
 <Layout>
+	<NavBar />
 	<div>
 		<h2>Videos</h2>
 		<div class="flex gap-15">
 			{
 				videos.map((video) => (
-					<a href={`/videos/${video.name}`}>
-						<VideoCard
-							url={video.url}
-							name={video.name}
-						/>
+					<a href={`/videos/${video.id}`}>
+						<VideoCard url={video.url} name={video.id} />
 					</a>
 				))
 			}
 		</div>
 	</div>
-
-	<!-- Form to upload a video -->
-	<!-- <VideoUploadForm client:load /> -->
 </Layout>

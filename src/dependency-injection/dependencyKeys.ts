@@ -1,3 +1,4 @@
 export enum dependencyKeys {
-    videoRepo = 'videoRepo',
+  videoRepo = "videoRepo",
+  videoScreenshotsMetadataRepo = "videoScreenshotsMetadataRepo",
 }
