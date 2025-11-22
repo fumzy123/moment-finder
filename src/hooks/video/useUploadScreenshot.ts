@@ -12,6 +12,8 @@ export function useUploadScreenshot(videoId: string) {
 
       if (!res.ok) {
         throw new Error(`Upload failed: ${res.statusText}`);
+      } else {
+        console.log("Screenshot taken successfully");
       }
 
       return res.json();
