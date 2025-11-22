@@ -27,7 +27,7 @@ export default function ScreenshotDisplay({
   }
 
   if (!allVideoScreenshotsInVideo.length) {
-    return <p>No Data was gotten</p>;
+    return <p>No Videoscreenshot has been taken</p>;
   }
 
   // Render
