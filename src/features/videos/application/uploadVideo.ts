@@ -11,7 +11,7 @@ interface UploadVideoArgs {
   selectedVideo: File;
 }
 
-interface UploadVideoResponse {
+interface UploadVideoResult {
   id: string;
   name: string;
   bucketPath: string;
@@ -25,7 +25,7 @@ export async function uploadVideo({
 }: {
   infrastructure: UploadVideoInfrastructure;
   args: UploadVideoArgs;
-}): Promise<UploadVideoResponse> {
+}): Promise<UploadVideoResult> {
   // Extract Infrastructure and Arguments
   const { videoRepo } = infrastructure;
   const { selectedVideo } = args;
