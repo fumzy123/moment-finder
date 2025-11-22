@@ -1,13 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 import type { GetAllVideoScreenshotsResponse } from "../../pages/api/videos/dtos/GetAllVideoScreenshotsResponse";
-import type { VideoScreenshotDTO } from "../../pages/api/videos/dtos/VideoScreenshotDTO";
 
 export function useVideoScreenshots(videoId: string) {
-  return useQuery<VideoScreenshotDTO[]>({
+  return useQuery({
     queryKey: ["screenshots", videoId],
-    queryFn: async (): Promise<VideoScreenshotDTO[]> => {
+    queryFn: async () => {
+
+      // Fetch Data from the API Endpoint
       const res = await fetch(`/api/videos/${videoId}/screenshots`);
+
+      // Throw Error if not okay
       if (!res.ok) throw new Error("Failed to fetch screenshots");
+      
+      // 
       const responseJSON: GetAllVideoScreenshotsResponse =
         await res.json();
       console.log("In the Data Fetching Layer:", responseJSON);

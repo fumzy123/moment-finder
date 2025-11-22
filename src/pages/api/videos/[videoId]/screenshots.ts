@@ -82,7 +82,7 @@ export const POST: APIRoute = async ({ params, request }) => {
 
   // todo : Server side form validation needed with zod
 
-  // Get the Dependecnies from the Dependency Injection Container
+  // Get the Dependencies from the Dependency Injection Container
   const videoRepo = resolvers.videoRepoResolver();
   const videoScreenshotMetadataRepo =
     resolvers.videoScreenshotMetadataRepoResolver();
