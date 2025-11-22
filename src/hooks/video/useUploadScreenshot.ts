@@ -22,7 +22,7 @@ export function useUploadScreenshot(videoId: string) {
     // 🚀 After upload → refresh the screenshots
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["videoScreenshots", videoId],
+        queryKey: ["screenshots", videoId],
       });
     },
 

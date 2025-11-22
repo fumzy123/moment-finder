@@ -126,6 +126,10 @@ export default function VideoAnnotationCanvas({
     }
   }, [rect, showAnnotationCanvas]);
 
+  // Mutation Hook to Upload Screenshot
+  const { mutate: uploadScreenshotMutation, isPending } =
+    useUploadScreenshot(selectedVideo.name);
+
   // ------------------------ Event Handlers ----------------------------------
 
   // Events to handle drag selection
@@ -269,26 +273,10 @@ export default function VideoAnnotationCanvas({
     formData.append("outputWidth", String(screenShot.outputWidth));
     formData.append("outputHeight", String(screenShot.outputHeight));
 
-    // Send form data to backend
-    const res = await fetch(
-      `/api/videos/${selectedVideo.name}/screenshots`,
-      {
-        method: "POST",
-        body: formData,
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Image saved on server:", data);
-        // Optionally update (state with permanent URL returned by server
-      })
-      .catch((err) =>
-        console.error("Error uploading screenshot:", err)
-      );
-    // const ans = useUploadScreenshot(selectedVideo.name);
+    uploadScreenshotMutation(formData);
   }
 
-  // Render
+  // ------------------------ Render ----------------------------------
   return (
     <>
       <div className="relative">
